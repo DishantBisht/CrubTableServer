@@ -7,20 +7,23 @@ var logger = require('morgan');
 var indexRouter = require('./routes/index');
 var rowRouter = require('./routes/rowRouter');
 var usersRouter = require('./routes/users');
+const cors = require('cors');
 
 const mongoose = require('mongoose');
 
 const Rows = require('./models/Rows');
 
-const url = 'mongodb://localhost:27017/conFusion';
-const connect = mongoose.connect(url);
+const uri = "mongodb+srv://Dishant:dishantbisht@cluster0.srkc8.mongodb.net/CRUDtable?retryWrites=true&w=majority";
 
-connect.then((db) => {
-    console.log("Connected correctly to server");
-}, (err) => { console.log(err); });
+try {
+  mongoose.connect( uri, {useNewUrlParser: true, useUnifiedTopology: true}, () =>
+  console.log("connected"));    
+  }catch (error) { 
+  console.log("could not connect");   
+  }
 
 var app = express();
-
+app.use(cors());
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
@@ -30,15 +33,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-
-app.use( (req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-Width, Content-Type, Accept, Authorization");
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PATCH, DELETE, OPTIONS, PUT");
-
-
-  next();
-});
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
